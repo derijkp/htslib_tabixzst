@@ -44,6 +44,7 @@ DEALINGS IN THE SOFTWARE.  */
 #include "htslib/regidx.h"
 #include "htslib/hts_defs.h"
 #include "htslib/hts_log.h"
+#include "zst_tbx.h"
 
 typedef struct
 {
@@ -101,6 +102,10 @@ int file_type(const char *fname)
     else if (l>=7 && strcasecmp(fname+l-7, ".bed.gz") == 0) return IS_BED;
     else if (l>=7 && strcasecmp(fname+l-7, ".sam.gz") == 0) return IS_SAM;
     else if (l>=7 && strcasecmp(fname+l-7, ".vcf.gz") == 0) return IS_VCF;
+    else if (l>=8 && strcasecmp(fname+l-8, ".gff.zst") == 0) return IS_BED;
+    else if (l>=8 && strcasecmp(fname+l-8, ".bed.zst") == 0) return IS_BED;
+    else if (l>=8 && strcasecmp(fname+l-8, ".sam.zst") == 0) return IS_SAM;
+    else if (l>=8 && strcasecmp(fname+l-8, ".vcf.zst") == 0) return IS_VCF;
     else if (l>=4 && strcasecmp(fname+l-4, ".bcf") == 0) return IS_BCF;
     else if (l>=4 && strcasecmp(fname+l-4, ".bam") == 0) return IS_BAM;
     else if (l>=4 && strcasecmp(fname+l-5, ".cram") == 0) return IS_CRAM;
@@ -705,7 +710,14 @@ int main(int argc, char *argv[])
     }
     else    // TBI index
     {
-        switch (ret = tbx_index_build(fname, min_shift, &conf))
+//fprintf(stdout,"-dbg- build index, filetype=%d\n",ftype);
+        int l = strlen(fname);
+        if (l>=4 && strcasecmp(fname+l-4, ".zst") == 0) {
+	    ret = zst_tbx_index_build(fname, min_shift, &conf);
+	} else {
+	    ret = tbx_index_build(fname, min_shift, &conf);
+	}
+        switch (ret)
         {
             case 0:
                 return 0;

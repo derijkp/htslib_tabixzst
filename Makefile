@@ -35,7 +35,8 @@ CPPFLAGS =
 # TODO: probably update cram code to make it compile cleanly with -Wc++-compat
 # For testing strict C99 support add -std=c99 -D_XOPEN_SOURCE=600
 #CFLAGS   = -g -Wall -O2 -pedantic -std=c99 -D_XOPEN_SOURCE=600
-CFLAGS   = -g -Wall -O2 -fvisibility=hidden
+#CFLAGS   = -g -Wall -O2 -fvisibility=hidden
+CFLAGS   = -g -Wall -pedantic -std=c99 -D_XOPEN_SOURCE=600
 EXTRA_CFLAGS_PIC = -fpic
 TARGET_CFLAGS =
 LDFLAGS  = -fvisibility=hidden
@@ -218,6 +219,8 @@ LIBHTS_OBJS = \
 	synced_bcf_reader.o \
 	vcf_sweep.o \
 	tbx.o \
+	zst_tbx.o \
+	zstdtools.o \
 	textutils.o \
 	thread_pool.o \
 	vcf.o \
@@ -514,8 +517,8 @@ bgzip: bgzip.o libhts.a
 htsfile: htsfile.o libhts.a
 	$(CC) $(LDFLAGS) -o $@ htsfile.o libhts.a $(LIBS) -lpthread
 
-tabix: tabix.o libhts.a
-	$(CC) $(LDFLAGS) -o $@ tabix.o libhts.a $(LIBS) -lpthread
+tabix: tabix.o zst_tbx.o zstdtools.c libhts.a
+	$(CC) $(LDFLAGS) -o $@ tabix.o zst_tbx.o zstdtools.o libhts.a $(LIBS) -lzstd -lpthread
 
 bgzip.o: bgzip.c config.h $(htslib_bgzf_h) $(htslib_hts_h) $(htslib_hfile_h)
 htsfile.o: htsfile.c config.h $(htslib_hfile_h) $(htslib_hts_h) $(htslib_sam_h) $(htslib_vcf_h)

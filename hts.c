@@ -2274,6 +2274,7 @@ hts_idx_t *hts_idx_init(int n, int fmt, uint64_t offset0, int min_shift, int n_l
     }
     idx->tbi_n = -1;
     idx->last_tbi_tid = -1;
+//fprintf(stderr,"-dbg- hts_idx_init idx->z.last_tid=%d\n",idx->z.last_tid);
     return idx;
 }
 
@@ -2424,6 +2425,7 @@ int hts_idx_push(hts_idx_t *idx, int tid, hts_pos_t beg, hts_pos_t end, uint64_t
     }
     if (idx->n < tid + 1) idx->n = tid + 1;
     if (idx->z.finished) return 0;
+//fprintf(stderr,"-dbg- tid=%d idx->z.last_tid=%d\n",tid,idx->z.last_tid);
     if (idx->z.last_tid != tid || (idx->z.last_tid >= 0 && tid < 0)) { // change of chromosome
         if ( tid>=0 && idx->n_no_coor )
         {

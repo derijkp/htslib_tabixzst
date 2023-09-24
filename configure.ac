@@ -361,6 +361,16 @@ is installed.
 FAILED.  This error must be resolved in order to build HTSlib successfully.])
 fi
 
+zstd_devel=ok
+dnl Set a trivial non-empty INCLUDES to avoid excess default includes tests
+AC_CHECK_HEADER([zstd.h], [], [zstd_devel=missing], [;])
+AC_CHECK_LIB(zstd, inflate,  [], [zstd_devel=missing])
+
+if test $zstd_devel != ok; then
+  MSG_ERROR([zstd development files not found
+])
+fi
+
 dnl connect() etc. fns are in libc on linux, but libsocket on illumos/Solaris
 AC_SEARCH_LIBS([recv], [socket ws2_32], [
 if test "$ac_cv_search_recv" != "none required"
